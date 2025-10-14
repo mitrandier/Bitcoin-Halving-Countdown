@@ -9,7 +9,6 @@
     margin: 0;
     font-family: Arial, sans-serif;
     background: #0d1117;
-    color: #f7931a;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,24 +20,22 @@
     padding: 40px 60px;
     border-radius: 20px;
     box-shadow: 0 0 30px rgba(247,147,26,0.7);
+    color: #f7931a;
   }
+  /* لوگوی پیکسلی بیت‌کوین B */
   .logo {
     display: grid;
-    grid-template-columns: repeat(8, 10px);
-    grid-gap: 2px;
+    grid-template-columns: repeat(8, 12px);
+    grid-template-rows: repeat(8, 12px);
     justify-content: center;
     margin-bottom: 20px;
   }
-  .pixel { width: 10px; height: 10px; }
+  .pixel { width: 12px; height: 12px; }
   .orange { background: #f7931a; }
   .white { background: #ffffff; }
   h1 { font-size: 2rem; margin: 10px 0; }
-  #countdown {
-    font-size: 1.8rem;
-    margin-top: 20px;
-    color: #58a6ff;
-    direction: ltr; /* حل مشکل اعداد فارسی */
-  }
+  #countdown { font-size: 1.8rem; margin-top: 20px; }
+  .rtl { direction: rtl; display: inline-block; text-align: right; }
   select {
     padding: 5px 10px;
     margin-bottom: 20px;
@@ -49,7 +46,7 @@
   }
   @media (max-width: 600px) {
     .container { padding: 20px 30px; }
-    .logo { grid-template-columns: repeat(8, 7px); grid-gap: 1px; }
+    .logo { grid-template-columns: repeat(8, 8px); grid-template-rows: repeat(8, 8px); }
     h1 { font-size: 1.5rem; }
     #countdown { font-size: 1.3rem; }
   }
@@ -64,11 +61,11 @@
     <option value="de">Deutsch</option>
   </select>
   <h1 id="title">⛏️ شمارش معکوس تا هاوینگ بیت‌کوین</h1>
-  <div id="countdown">در حال بارگذاری...</div>
+  <div id="countdown" class="rtl">در حال بارگذاری...</div>
 </div>
 
 <script>
-// تابع تبدیل اعداد به فارسی
+// تبدیل اعداد به فارسی
 function toPersianNumber(num) {
   const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
   return num.toString().split("").map(d => persianDigits[d] || d).join("");
@@ -88,16 +85,16 @@ const languageSelect = document.getElementById("languageSelect");
 const titleEl = document.getElementById("title");
 const countdownEl = document.getElementById("countdown");
 
-// طراحی لوگوی پیکسلی بیت‌کوین
+// لوگوی پیکسلی B بیت‌کوین
 const logoPattern = [
   "00111100",
-  "01111110",
+  "01100110",
   "11111111",
   "11111111",
   "11111111",
-  "01111110",
+  "01100110",
   "00111100",
-  "00011000"
+  "00000000"
 ];
 const logoContainer = document.getElementById("bitcoinLogo");
 logoPattern.forEach(row => {
@@ -128,7 +125,7 @@ function updateCountdown() {
   let minutes = Math.floor((diff / (1000*60)) % 60);
   let seconds = Math.floor((diff / 1000) % 60);
 
-  // اگر فارسی باشد اعداد را تبدیل کنیم
+  // اعداد فارسی برای فارسی
   if(lang === "fa"){
     days = toPersianNumber(days);
     hours = toPersianNumber(hours);
@@ -136,7 +133,12 @@ function updateCountdown() {
     seconds = toPersianNumber(seconds);
   }
 
-  countdownEl.textContent = `${days} ${text.day}, ${hours} ${text.hour}, ${minutes} ${text.minute}, ${seconds} ${text.second}`;
+  // هر واحد جدا شده با span برای RTL
+  if(lang === "fa"){
+    countdownEl.innerHTML = `<span>${days} ${text.day}</span>، <span>${hours} ${text.hour}</span>، <span>${minutes} ${text.minute}</span>، <span>${seconds} ${text.second}</span>`;
+  } else {
+    countdownEl.textContent = `${days} ${text.day}, ${hours} ${text.hour}, ${minutes} ${text.minute}, ${seconds} ${text.second}`;
+  }
 }
 
 languageSelect.addEventListener("change", updateCountdown);
