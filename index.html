@@ -1,172 +1,56 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bitcoin Halving Countdown</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>شمارش معکوس هاوینگ بیت‌کوین</title>
   <style>
     body {
-      background: #0d0d0d;
-      color: #f5f5f5;
-      font-family: 'Inter', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: sans-serif;
       text-align: center;
-      padding: 80px 20px;
-      direction: rtl;
-      transition: direction 0.3s ease;
+      padding-top: 120px;
     }
     h1 {
-      color: #f7931a;
+      color: #f2a900;
       font-size: 2rem;
-      margin-bottom: 10px;
     }
     #countdown {
-      font-size: 1.4rem;
-      color: #f7931a;
-      margin-top: 15px;
-    }
-    #block {
-      color: #b3b3b3;
-      margin-top: 8px;
-    }
-    #progress-container {
-      width: 90%;
-      max-width: 600px;
-      height: 12px;
-      background: #1a1a1a;
-      border-radius: 8px;
-      margin: 30px auto 10px;
-      overflow: hidden;
-    }
-    #progress-bar {
-      height: 100%;
-      background: #f7931a;
-      width: 0%;
-      transition: width 1s ease;
-    }
-    #percent {
-      font-size: 0.9rem;
-      color: #b3b3b3;
-    }
-    #date {
-      margin-top: 12px;
-      color: #999;
-      font-size: 0.95rem;
-    }
-    #langSelector {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #f5f5f5;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-    #langSelector option {
-      background: #0d0d0d;
-      color: #f5f5f5;
+      font-size: 1.8rem;
+      margin-top: 30px;
+      color: #58a6ff;
     }
   </style>
 </head>
 <body>
-  <select id="langSelector">
-    <option value="fa">🇮🇷 فارسی</option>
-    <option value="en">🇬🇧 English</option>
-    <option value="de">🇩🇪 Deutsch</option>
-  </select>
-
-  <h1 id="title">⛏️ شمارش معکوس تا هاوینگ بعدی بیت‌کوین</h1>
-  <div id="block">📦 در حال دریافت بلاک...</div>
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-  <div id="percent">0%</div>
+  <h1>⛏️ شمارش معکوس تا هاوینگ بعدی بیت‌کوین</h1>
   <div id="countdown">در حال بارگذاری...</div>
-  <div id="date">📅 تاریخ تخمینی: ...</div>
 
   <script>
-    const HALVING_INTERVAL = 210000;
-    const LAST_HALVING_BLOCK = 840000; // آوریل 2024
-    const AVG_BLOCK_TIME = 600; // ثانیه (10 دقیقه)
-    const texts = {
-      fa: {
-        title: "⛏️ شمارش معکوس تا هاوینگ بعدی بیت‌کوین",
-        currentBlock: "📦 بلاک فعلی:",
-        happened: "🎉 هاوینگ انجام شد!",
-        loading: "در حال بارگذاری...",
-        error: "❌ خطا در دریافت اطلاعات",
-        dateLabel: "📅 تاریخ تخمینی:",
-        direction: "rtl"
-      },
-      en: {
-        title: "⛏️ Bitcoin Next Halving Countdown",
-        currentBlock: "📦 Current Block:",
-        happened: "🎉 Halving has occurred!",
-        loading: "Loading...",
-        error: "❌ Error fetching data",
-        dateLabel: "📅 Estimated date:",
-        direction: "ltr"
-      },
-      de: {
-        title: "⛏️ Countdown bis zur nächsten Bitcoin-Halbierung",
-        currentBlock: "📦 Aktueller Block:",
-        happened: "🎉 Halbierung erfolgt!",
-        loading: "Wird geladen...",
-        error: "❌ Fehler beim Abrufen der Daten",
-        dateLabel: "📅 Geschätztes Datum:",
-        direction: "ltr"
-      }
-    };
+    // تاریخ تقریبی هاوینگ بعدی (۲۴ آوریل ۲۰۲۸)
+    const halvingDate = new Date("2028-04-24T00:00:00Z");
 
-    let currentLang = "fa";
-    const titleEl = document.getElementById("title");
-    const blockEl = document.getElementById("block");
-    const countdownEl = document.getElementById("countdown");
-    const progressBar = document.getElementById("progress-bar");
-    const percentEl = document.getElementById("percent");
-    const dateEl = document.getElementById("date");
-    const langSelector = document.getElementById("langSelector");
+    function updateCountdown() {
+      const now = new Date();
+      const diff = halvingDate - now;
 
-    langSelector.addEventListener("change", () => {
-      currentLang = langSelector.value;
-      document.body.style.direction = texts[currentLang].direction;
-      titleEl.textContent = texts[currentLang].title;
-      main();
-    });
-
-    async function getBlockHeight() {
-      try {
-        const res = await fetch("https://mempool.space/api/blocks/tip/height");
-        return parseInt(await res.text());
-      } catch {
-        return null;
-      }
-    }
-
-    function formatTime(seconds) {
-      const days = Math.floor(seconds / (60 * 60 * 24));
-      const hours = Math.floor((seconds / 3600) % 24);
-      const minutes = Math.floor((seconds / 60) % 60);
-      const secs = Math.floor(seconds % 60);
-      return `${days}d ${hours}h ${minutes}m ${secs}s`;
-    }
-
-    async function main() {
-      const t = texts[currentLang];
-      blockEl.textContent = t.loading;
-      countdownEl.textContent = t.loading;
-      const height = await getBlockHeight();
-      if (!height) {
-        countdownEl.textContent = t.error;
+      if (diff <= 0) {
+        document.getElementById("countdown").innerHTML = "🎉 هاوینگ بعدی اتفاق افتاده است!";
+        clearInterval(timer);
         return;
       }
 
-      const nextHalving = LAST_HALVING_BLOCK + HALVING_INTERVAL;
-      const remainingBlocks = nextHalving - height;
-      const progress = ((height - LAST_HALVING_BLOCK) / HALVING_INTERVAL) * 100;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
 
-      blockEl.textContent = `${t.currentBlock} ${height.toLocaleString()}`;
-      pr
+      document.getElementById("countdown").innerHTML =
+        `${days} روز، ${hours} ساعت، ${minutes} دقیقه، ${seconds} ثانیه`;
+    }
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
