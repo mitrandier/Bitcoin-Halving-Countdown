@@ -1,129 +1,46 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bitcoin Halving Countdown</title>
+  <meta charset="UTF-8" />
+  <title>شمارش معکوس هاوینگ بیت‌کوین</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000; /* پس‌زمینه مشکی */
-      color: #f7931a; /* رنگ نارنجی بیت‌کوین */
-    }
-    .container {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: sans-serif;
       text-align: center;
-      background: #1a1a1a; /* کارت تیره */
-      padding: 40px 60px;
-      border-radius: 20px;
-      box-shadow: 0 0 30px rgba(247, 147, 26, 0.7);
+      padding-top: 120px;
     }
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px #000;
+      color: #f7931a; /* نارنجی بیت‌کوین */
+      font-size: 2rem;
     }
     #countdown {
-      font-size: 2em;
-      margin-top: 20px;
-    }
-    select {
-      font-size: 1em;
-      margin-bottom: 20px;
-      padding: 5px 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px 30px;
-      }
-      h1 {
-        font-size: 2em;
-      }
-      #countdown {
-        font-size: 1.5em;
-      }
+      font-size: 1.8rem;
+      margin-top: 30px;
+      color: #58a6ff; /* آبی */
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <select id="languageSelect">
-      <option value="fa">فارسی</option>
-      <option value="en">English</option>
-      <option value="de">Deutsch</option>
-    </select>
-    <h1 id="title">شمارنده هالوینگ بیت‌کوین</h1>
-    <div id="countdown">در حال بارگذاری...</div>
-  </div>
+  <h1>⛏️ شمارش معکوس تا هاوینگ بعدی بیت‌کوین</h1>
+  <div id="countdown">در حال بارگذاری...</div>
 
   <script>
-    const halvingDate = new Date("April 14, 2028 00:00:00").getTime();
-
-    const texts = {
-      fa: {
-        title: "شمارنده هالوینگ بیت‌کوین",
-        finished: "هالوینگ اتفاق افتاد!",
-        day: "روز",
-        hour: "ساعت",
-        minute: "دقیقه",
-        second: "ثانیه"
-      },
-      en: {
-        title: "Bitcoin Halving Countdown",
-        finished: "Halving happened!",
-        day: "days",
-        hour: "hours",
-        minute: "minutes",
-        second: "seconds"
-      },
-      de: {
-        title: "Bitcoin Halving Countdown",
-        finished: "Halving hat stattgefunden!",
-        day: "Tage",
-        hour: "Stunden",
-        minute: "Minuten",
-        second: "Sekunden"
-      }
-    };
-
-    const languageSelect = document.getElementById("languageSelect");
-    const titleEl = document.getElementById("title");
-    const countdownEl = document.getElementById("countdown");
+    // تاریخ دقیق هاوینگ بعدی: 14 آوریل 2028
+    const halvingDate = new Date("2028-04-14T00:00:00Z");
 
     function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = halvingDate - now;
-      const lang = languageSelect.value;
-      const text = texts[lang];
+      const now = new Date();
+      const diff = halvingDate - now;
 
-      titleEl.textContent = text.title;
-
-      if(distance < 0){
-        countdownEl.textContent = text.finished;
-        clearInterval(interval);
+      if (diff <= 0) {
+        document.getElementById("countdown").innerHTML = "🎉 هاوینگ بعدی اتفاق افتاده است!";
+        clearInterval(timer);
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      countdownEl.textContent = `${days} ${text.day} ${hours} ${text.hour} ${minutes} ${text.minute} ${seconds} ${text.second}`;
-    }
-
-    languageSelect.addEventListener("change", updateCountdown);
-
-    const interval = setInterval(updateCountdown, 1000);
-    updateCountdown();
-  </script>
-</body>
-</html>
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const secon
